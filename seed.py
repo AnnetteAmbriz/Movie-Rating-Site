@@ -47,16 +47,12 @@ def load_movies():
 
         movie_id, movie_title, released_str, video_release, imdb_url = movie_list
 
-        date_str = movie_title.find('(')
-        movie_title = movie_title[:date_str-1]
+        # date_index = movie_title.find('(')
+        movie_title = movie_title[:-7]
 
-        if released_str:
-            released_at = datetime.datetime.strptime(released_str, "%d-%b-%Y")
-        else:
-            released_at = None
+        released_at = datetime.datetime.strptime(released_str, "%d-%b-%Y")
 
         movie = Movie(movie_id=movie_id, title=movie_title, released_at=released_at, imdb_url=imdb_url)
-
 
         db.session.add(movie)
 
@@ -79,8 +75,6 @@ def load_ratings():
         db.session.add(rating)
 
     db.session.commit()
-
-
 
 
 def set_val_user_id():
