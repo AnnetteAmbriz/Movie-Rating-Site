@@ -1,4 +1,4 @@
-"""Models and database functions for Ratings project."""
+"""Models and database functions for Rating project."""
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -39,16 +39,36 @@ class Movie(db.Model):
     released_at = db.Column(db.DateTime, nullable=False)
     imdb_url = db.Column(db.String(1000), nullable=True)
 
+    def __repr__(self):
+        """Returns relevant info about movie object"""
+        return "<Movie: title={} id={}>".format(self.title, self.movie_id)
 
-class Ratings(db.Model):
-    """Ratings for movies"""
+
+class Rating(db.Model):
+    """Rating for movies"""
 
     __tablename__ = "ratings"
 
     rating_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    movie_id = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.movie_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
+
+    #Define relationship to user
+    user = db.relationship("User",
+                       backref=db.backref("ratings",
+                                          order_by=rating_id))
+
+    # Define relationship to movie
+    movie = db.relationship("Movie",
+                            backref=db.backref("ratings",
+                                               order_by=rating_id))
+
+
+
+    def __repr__(self):
+        """Returns relevant info about rating object"""
+        return "<Rating: rating id={} score={}>".format(self.rating_id, self.score)
 
 
 ##############################################################################

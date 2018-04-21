@@ -1,7 +1,7 @@
 """Utility file to seed ratings database from MovieLens data in seed_data/"""
 
 from sqlalchemy import func
-from model import User, Ratings, Movie
+from model import User, Rating, Movie
 import datetime
 # from model import Rating
 # from model import Movie
@@ -62,7 +62,7 @@ def load_movies():
 def load_ratings():
     """Load ratings from u.data into database."""
 
-    Ratings.query.delete()
+    Rating.query.delete()
 
     for row in open('seed_data/u.data'):
         row = row.rstrip()
@@ -70,7 +70,7 @@ def load_ratings():
         ratings_list = ratings_list[:3]
         user_id, movie_id, score = ratings_list
 
-        rating = Ratings(movie_id=movie_id, user_id=user_id, score=score)
+        rating = Rating(movie_id=movie_id, user_id=user_id, score=score)
 
         db.session.add(rating)
 

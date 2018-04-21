@@ -1,12 +1,9 @@
-"""Movie Ratings."""
-
+from flask import (Flask, render_template, redirect, request, flash, session)
+from model import User, Rating, Movie, connect_to_db, db
 from jinja2 import StrictUndefined
-
-from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db
-
+"""Movie Ratings."""
 
 app = Flask(__name__)
 
@@ -22,7 +19,62 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def index():
     """Homepage."""
-    return "<html><body>Placeholder for the homepage.</body></html>"
+    #login
+    return render_template("homepage.html")
+
+@app.route('/users')
+def user_list():
+    """Show list of users."""
+
+    users = User.query.all()
+    return render_template("user_list.html", users=users)
+
+@app.route('/register', methods=["GET", 'POST'])
+def register_form():
+
+    if request.method == 'POST':
+        email = request.form.get("email")
+        password = request.form.get("password")
+        age = request.form.get("age")
+        zipcode = request.form.get("zipcode")
+
+        #check if in db, else add to db
+        if User.query.filter_by(email=email).one():
+            flash("User already exists")
+
+        new_user = User(email=email, password=password, age=age, zipcode=zipcode)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash("You have successfully signed up!")
+        session['login'] = True
+        return redirect('/')
+
+    return render_template("register_form.html")
+
+
+@app.route('/check-login.json')
+def get_user_login():
+
+    email = request.args.get('email')
+    password = request.args.get('password')
+
+    print email, password
+
+    current_user = User.query.filter_by(email=email).one()
+
+    print current_user
+
+    if current_user:
+        print "entered first if"
+        if current_user.password == password:
+            print "second if"
+            session['login'] = True
+            session['user_id'] = current_user.user_id
+
+    return render_template('homepage.html')
+
 
 
 if __name__ == "__main__":
