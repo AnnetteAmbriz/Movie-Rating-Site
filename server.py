@@ -1,4 +1,4 @@
-from flask import (Flask, render_template, redirect, request, flash, session)
+from flask import (Flask, render_template, redirect, request, flash, session, jsonify)
 from model import User, Rating, Movie, connect_to_db, db
 from jinja2 import StrictUndefined
 from flask_debugtoolbar import DebugToolbarExtension
@@ -60,22 +60,28 @@ def get_user_login():
     email = request.args.get('email')
     password = request.args.get('password')
 
-    print email, password
+    current_user = User.query.filter_by(email=email).all()
 
-    current_user = User.query.filter_by(email=email).one()
-
-    print current_user
+    user_validation = {}
 
     if current_user:
-        print "entered first if"
-        if current_user.password == password:
-            print "second if"
+        if current_user[0].password == password:
             session['login'] = True
-            session['user_id'] = current_user.user_id
+            session['user_id'] = current_user[0].user_id
+            user_validation['valid'] = True
+    else:
+        user_validation['valid'] = False
 
-    return render_template('homepage.html')
+    return jsonify(user_validation)
 
 
+@app.route('/logout')
+def log_out():
+
+    session.pop('user_id', None)
+    session['login'] = False
+
+    return render_template("homepage.html")
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

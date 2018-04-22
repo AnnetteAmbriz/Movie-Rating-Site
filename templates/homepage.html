@@ -16,13 +16,29 @@
 
 <script>
 
-function userLogCompletion(result){
-    // if user and pw match
-    $('#log-out').show();
-    $('#sign-up').hide();
-    $('#login').hide();
+function logOut(){
 
-    //else, tell the user their un/pw didn't match
+        $('#log-out').hide();
+        $('#sign-up').show();
+        $('#login').show();
+        $.get('/logout', function userLogOutCompletion(){
+            alert("You are logged out");
+        });
+}
+
+$('#log-out').on('click', logOut);
+
+function userLogCompletion(result){
+    if (result.valid == true){
+        $('#log-out').show();
+        $('#sign-up').hide();
+        $('#login').hide();
+        alert("You are logged in");
+    }
+
+    else{
+        alert("Incorrect username/password");
+    }
 
 }
 
