@@ -16,23 +16,12 @@
 
 <script>
 
-function logOut(){
-
-        $('#log-out').hide();
-        $('#sign-up').show();
-        $('#login').show();
-        $.get('/logout', function userLogOutCompletion(){
-            alert("You are logged out");
-        });
-}
-
-$('#log-out').on('click', logOut);
 
 function userLogCompletion(result){
     if (result.valid == true){
         $('#log-out').show();
-        $('#sign-up').hide();
-        $('#login').hide();
+        $('#sign-up').remove();
+        $('#login').remove();
         alert("You are logged in");
     }
 

@@ -19,8 +19,13 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def index():
     """Homepage."""
-    #login
-    return render_template("homepage.html")
+    if 'login' in session:
+        if session['login'] is True:
+            return render_template("homepage_signedin.html")
+        else:
+            return render_template("homepage.html")
+    else:
+        return render_template("homepage.html")
 
 @app.route('/users')
 def user_list():
@@ -39,17 +44,20 @@ def register_form():
         zipcode = request.form.get("zipcode")
 
         #check if in db, else add to db
-        if User.query.filter_by(email=email).one():
+        if User.query.filter_by(email=email).all():
             flash("User already exists")
 
-        new_user = User(email=email, password=password, age=age, zipcode=zipcode)
+        else:
+            new_user = User(email=email, password=password, age=age, zipcode=zipcode)
 
-        db.session.add(new_user)
-        db.session.commit()
+            db.session.add(new_user)
+            db.session.commit()
+            new_user = User.query.filter_by(email=email).one()
 
-        flash("You have successfully signed up!")
-        session['login'] = True
-        return redirect('/')
+            flash("You have successfully signed up!")
+            session['login'] = True
+            session['user_id'] = current_user.user_id
+            return redirect('/')
 
     return render_template("register_form.html")
 
