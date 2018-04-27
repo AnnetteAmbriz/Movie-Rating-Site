@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<a href="/"> Home </a>
+  <h2>User Profile</h2>
+  <ul>
+    {%if user.email%}
+      <li>{{user.email}}</li>
+    {%endif%}
+    <li>{{user.age}}</li>
+    <li>{{user.zipcode}}</li>
+    {%for rating in user_ratings%}
+      <li>{{rating.movie.title}} : {{rating.score}}</li>
+
+    {%endfor%}
+
+  </ul>
+
+
+
+
+{% endblock %}
+

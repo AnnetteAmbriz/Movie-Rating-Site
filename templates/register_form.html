@@ -7,6 +7,17 @@
     What is your age:<br> <input name="age" class="register" type="text"></input><br>
     What is your zipcode:<br> <input name="zipcode" class="register" type="text"></input><br><br>
     <input type="submit" value="Sign Up">
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 </form>
 
 {% endblock %}

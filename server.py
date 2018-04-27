@@ -20,8 +20,9 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Homepage."""
     if 'login' in session:
+        #condition is not working as expected
         if session['login'] is True:
-            return render_template("homepage_signedin.html")
+            return render_template('homepage_signedin.html')
         else:
             return render_template("homepage.html")
     else:
@@ -33,6 +34,15 @@ def user_list():
 
     users = User.query.all()
     return render_template("user_list.html", users=users)
+
+@app.route('/users/<user_id>')
+def display_user_profile(user_id):
+    """returns the given user's info"""
+
+    user = User.query.get(user_id)
+    user_ratings = user.ratings
+
+    return render_template("user_profile.html", user=user, user_ratings=user_ratings)
 
 @app.route('/register', methods=["GET", 'POST'])
 def register_form():
@@ -56,8 +66,8 @@ def register_form():
 
             flash("You have successfully signed up!")
             session['login'] = True
-            session['user_id'] = current_user.user_id
-            return redirect('/')
+            session['user_id'] = new_user.user_id
+            return redirect('/users/{}'.format(session['user_id']))
 
     return render_template("register_form.html")
 
